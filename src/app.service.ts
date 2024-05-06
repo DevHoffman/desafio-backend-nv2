@@ -42,9 +42,6 @@ export class AppService {
 
         const temperatura = this.tempConvert(data.main.temp);
 
-        // Tentei com JSON.stringify() mas preferi assim.
-        // return { temperatura: temperatura };
-
         let retorno;
         if (temperatura < 10) {
           retorno = this.getPlaylist('4FKAvyitHl2eb1uMX2qGXs', cidade);

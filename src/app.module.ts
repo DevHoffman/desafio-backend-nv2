@@ -9,7 +9,6 @@ import { Log } from './log/log.entity';
 
 @Module({
   imports: [
-    // TypeOrmModule.forFeature([Log]),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db/sql',

@@ -54,22 +54,4 @@ export class LogService {
     }
     return { message: 'Log successfully deleted' };
   }
-
-  countCidade(array) {
-    let itemAnterior = { cidade: null, count: 1 };
-    const arr = [];
-    array.map((item: { count: number; cidade: string }) => {
-      if (itemAnterior.cidade !== item.cidade) {
-        item.count = 1;
-        arr.push(item);
-      } else {
-        itemAnterior.count = itemAnterior.count + 1;
-      }
-
-      itemAnterior = item;
-      console.log(item);
-    });
-
-    return arr;
-  }
 }

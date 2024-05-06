@@ -108,8 +108,6 @@ export class AppService {
 
   getLogs() {
     const stats = this.logService.findStats();
-
-    // const historico = this.logService.findAll();
     return stats;
   }
 

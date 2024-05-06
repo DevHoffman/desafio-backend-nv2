@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateLogDto } from './dto/create-log.dto';
 import { UpdateLogDto } from './dto/update-menu.dto';
 import { Log } from './log.entity';
@@ -10,20 +10,22 @@ export class LogService {
   constructor(
     @InjectRepository(Log)
     private readonly logRepository: Repository<Log>,
+    private readonly dataSource: DataSource,
   ) {}
   // Add CRUD operations you intend to use here
 
   async findAll(): Promise<Log[]> {
-    return await this.logRepository.find();
+    const data = await this.logRepository.find();
+    return data;
   }
 
   async findStats() {
-    const res = await this.logRepository.find({
-      select: { cidade: true },
-      order: { cidade: 'ASC' },
-    });
-    const data = this.countCidade(res);
-
+    const data = await this.dataSource
+      .getRepository(Log)
+      .createQueryBuilder('log')
+      .select('cidade, count(cidade) consultas')
+      .groupBy('cidade')
+      .getRawMany();
     return data;
   }
 
@@ -54,15 +56,18 @@ export class LogService {
   }
 
   countCidade(array) {
-    let itemAnterior;
-    let arr = [];
-    let i = 1;
-    array.map((item: { cidade: string }) => {
-      // const exist = arr.indexOf(item.cidade);
-      if (typeof itemAnterior != null) console.log(itemAnterior);
-      // if (exist == -1) return arr.push({ cidade: item.cidade, counter: i });
+    let itemAnterior = { cidade: null, count: 1 };
+    const arr = [];
+    array.map((item: { count: number; cidade: string }) => {
+      if (itemAnterior.cidade !== item.cidade) {
+        item.count = 1;
+        arr.push(item);
+      } else {
+        itemAnterior.count = itemAnterior.count + 1;
+      }
+
       itemAnterior = item;
-      i++;
+      console.log(item);
     });
 
     return arr;

@@ -1,0 +1,137 @@
+import { Injectable } from '@nestjs/common';
+import { LogService } from './log/log.service';
+
+@Injectable()
+export class AppService {
+  constructor(private readonly logService: LogService) {} // This will be auto injected by Nestjs Injector
+  getToken(client_id: string, client_secret: string): any {
+    return fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+      }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Basic ' +
+          Buffer.from(client_id + ':' + client_secret).toString('base64'),
+      },
+    })
+      .then((T) => T.json())
+      .then((data) => {
+        return data;
+      });
+  }
+
+  getData(cidade: string | any, apiKey: string): any {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&limit=1&appid=${apiKey}`;
+    return fetch(url)
+      .then((T) => T.json())
+      .then((data: any) => {
+        if (!data) {
+          return {
+            error: 200,
+            mensagem: 'Nada encontrado',
+          };
+        }
+        if (data.cod && data.cod == 404)
+          return {
+            error: 404,
+            mensagem: 'Cidade não encontrada',
+          };
+
+        const temperatura = this.tempConvert(data.main.temp);
+
+        // Tentei com JSON.stringify() mas preferi assim.
+        // return { temperatura: temperatura };
+
+        let retorno;
+        if (temperatura < 10) {
+          retorno = this.getPlaylist('4FKAvyitHl2eb1uMX2qGXs', cidade);
+        }
+        if (temperatura > 10 && temperatura < 25) {
+          retorno = this.getPlaylist('5Me9UnTwWnPA2FuTgUKzIy', cidade);
+        }
+        if (temperatura > 25) {
+          retorno = this.getPlaylist('37i9dQZF1DX1ngEVM0lKrb', cidade);
+        }
+
+        return retorno;
+      });
+  }
+
+  async getPlaylist(playlist: string, city: string) {
+    const client_id = 'fc01ff40b06a4f5e841e36652136d9cf';
+    const client_secret = '2d6736d161014aaeba4d194a20edf5ff';
+
+    const jsonToken = await this.getToken(client_id, client_secret); // Gera o token
+    const access_token = jsonToken.access_token; // Pega o token do objeto
+
+    try {
+      return await fetch(
+        `https://api.spotify.com/v1/playlists/${playlist}/?fields=name,tracks(items(track(name)))`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        },
+      )
+        .then((T) => T.json())
+        .then((data) => {
+          const musicas = [];
+          data.tracks.items.map((item: { track: { name: string } }) => {
+            musicas.push(item.track.name);
+          });
+
+          const dados = {
+            cidade: city,
+            playlist: data.name,
+            musicas: JSON.stringify(musicas),
+            dat_cadastro: this.dateFormat(new Date()),
+          };
+
+          fetch('http://localhost:3000/log', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(dados),
+          });
+
+          return dados;
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  getLogs() {
+    const stats = this.logService.findStats();
+
+    // const historico = this.logService.findAll();
+    return stats;
+  }
+
+  dateFormat(date: Date): string {
+    // Função de formatar data
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+    const yyyy = date.getFullYear();
+    const hour = date.getHours();
+    const min =
+      date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+    const seg =
+      date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+    return mm + '/' + dd + '/' + yyyy + ' ' + hour + ':' + min + ':' + seg;
+  }
+
+  tempConvert(kelvin: number): number {
+    if (!kelvin) {
+      return null;
+    }
+
+    const celsius = kelvin - 273.15;
+    return celsius;
+  }
+}

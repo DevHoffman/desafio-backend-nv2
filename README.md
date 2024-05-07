@@ -34,10 +34,11 @@ $ npm run start:prod
 
 ## Rotas
 
-Neste projeto existem 2 rotas, a [Home](http://localhost:3000/) cuja cidade deve ser pesquisada conforme exemplo 1 e a tela de [Logs](http://localhost:3000/logs).
+Neste projeto existem 3 rotas, a [Home](http://localhost:3000/) cuja cidade deve ser pesquisada conforme exemplo 1, a de [Estatísticas](http://localhost:3000/logs) e a de [Logs](http://localhost:3000/logs).
 
 Exemplo: http://localhost:3000/?cidade=Vitória
 
 Rotas:
-- [Home](http://localhost:3000/)
-- [Logs](http://localhost:3000/logs)
+- http://localhost:3000/
+- http://localhost:3000/stats
+- http://localhost:3000/logs

@@ -104,6 +104,11 @@ export class AppService {
   }
 
   getLogs() {
+    const logs = this.logService.findAll();
+    return logs;
+  }
+
+  getStats() {
     const stats = this.logService.findStats();
     return stats;
   }

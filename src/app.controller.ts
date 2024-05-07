@@ -23,7 +23,12 @@ export class AppController {
   }
 
   @Get('logs')
-  getStats(): any {
+  getLogs(): any {
     return this.appService.getLogs();
+  }
+
+  @Get('stats')
+  getStats(): any {
+    return this.appService.getStats();
   }
 }

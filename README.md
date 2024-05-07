@@ -38,6 +38,6 @@ Neste projeto existem 2 rotas, a [Home](http://localhost:3000/) cuja cidade deve
 
 Exemplo: http://localhost:3000/?cidade=Vitória
 
-Links:
+Rotas:
 - [Home](http://localhost:3000/)
 - [Logs](http://localhost:3000/logs)

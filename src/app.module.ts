@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CacheModule } from '@nestjs/cache-manager';
-
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { LogModule } from './log/log.module';
 import { Log } from './log/log.entity';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { Log } from './log/log.entity';
       synchronize: true,
       entities: [Log],
     }),
+    ConfigModule.forRoot(),
+    // {envFilePath: ['.env.development.local', '.env.development'],}
     LogModule,
     CacheModule.register({
       isGlobal: true,

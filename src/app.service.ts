@@ -5,7 +5,7 @@ import { LogService } from './log/log.service';
 export class AppService {
   constructor(private readonly logService: LogService) {} // This will be auto injected by Nestjs Injector
   getToken(client_id: string, client_secret: string): any {
-    return fetch('https://accounts.spotify.com/api/token', {
+    return fetch(`${process.env.SPOTIFY_URL_AUTH}/token`, {
       method: 'POST',
       body: new URLSearchParams({
         grant_type: 'client_credentials',
@@ -24,7 +24,7 @@ export class AppService {
   }
 
   getData(cidade: string | any, apiKey: string): any {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${cidade}&limit=1&appid=${apiKey}`;
+    const url = `${process.env.OPENWEATHERMAP_API}/weather?q=${cidade}&limit=1&appid=${apiKey}`;
     return fetch(url)
       .then((T) => T.json())
       .then((data: any) => {
@@ -44,13 +44,13 @@ export class AppService {
 
         let retorno;
         if (temperatura < 10) {
-          retorno = this.getPlaylist('4FKAvyitHl2eb1uMX2qGXs', cidade);
+          retorno = this.getPlaylist(process.env.PLAYLIST_CLASSICA, cidade);
         }
         if (temperatura > 10 && temperatura < 25) {
-          retorno = this.getPlaylist('5Me9UnTwWnPA2FuTgUKzIy', cidade);
+          retorno = this.getPlaylist(process.env.PLAYLIST_ROCK, cidade);
         }
         if (temperatura > 25) {
-          retorno = this.getPlaylist('37i9dQZF1DX1ngEVM0lKrb', cidade);
+          retorno = this.getPlaylist(process.env.PLAYLIST_POP, cidade);
         }
 
         return retorno;
@@ -58,15 +58,15 @@ export class AppService {
   }
 
   async getPlaylist(playlist: string, city: string) {
-    const client_id = 'fc01ff40b06a4f5e841e36652136d9cf';
-    const client_secret = '2d6736d161014aaeba4d194a20edf5ff';
-
-    const jsonToken = await this.getToken(client_id, client_secret); // Gera o token
+    const jsonToken = await this.getToken(
+      process.env.SPOTIFY_CLIENT_ID,
+      process.env.SPOTIFY_CLIENT_SECRET,
+    ); // Gera o token na SPOTIFY
     const access_token = jsonToken.access_token; // Pega o token do objeto
 
     try {
       return await fetch(
-        `https://api.spotify.com/v1/playlists/${playlist}/?fields=name,tracks(items(track(name)))`,
+        `${process.env.SPOTIFY_API}/playlists/${playlist}/?fields=name,tracks(items(track(name)))`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -87,7 +87,7 @@ export class AppService {
             dat_cadastro: this.dateFormat(new Date()),
           };
 
-          fetch('http://localhost:3000/log', {
+          fetch(`${process.env.APP_URL}/log`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

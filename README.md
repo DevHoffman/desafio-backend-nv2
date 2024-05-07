@@ -31,3 +31,13 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+## Rotas
+
+Neste projeto existem 2 rotas, a [Home](http://localhost:3000/) cuja cidade deve ser pesquisada conforme exemplo 1 e a tela de [Logs](http://localhost:3000/logs).
+
+Exemplo: http://localhost:3000/?cidade=Vitória
+
+Links:
+[Home](http://localhost:3000/)
+[Logs](http://localhost:3000/logs)

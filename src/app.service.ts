@@ -23,8 +23,8 @@ export class AppService {
       });
   }
 
-  getData(cidade: string | any, apiKey: string): any {
-    const url = `${process.env.OPENWEATHERMAP_API}/weather?q=${cidade}&limit=1&appid=${apiKey}`;
+  getData(cidade: string): any {
+    const url = `${process.env.OPENWEATHERMAP_API}/weather?q=${cidade}&limit=1&appid=${process.env.OPENWEATHERMAP_KEY}`;
     return fetch(url)
       .then((T) => T.json())
       .then((data: any) => {

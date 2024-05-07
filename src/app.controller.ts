@@ -10,8 +10,7 @@ export class AppController {
 
   @Get()
   getData(@Req() { query }: Request): any {
-    const cidade = query.cidade;
-    const apiKey = 'c53be525dc986cffe2262b3f36f1519d';
+    const cidade = query.cidade.toString();
 
     if (!cidade) {
       return {
@@ -20,12 +19,11 @@ export class AppController {
       };
     }
 
-    return this.appService.getData(cidade, apiKey);
+    return this.appService.getData(cidade);
   }
 
   @Get('logs')
-  getHistory(): any {
+  getStats(): any {
     return this.appService.getLogs();
   }
-
 }
